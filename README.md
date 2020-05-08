@@ -23,6 +23,6 @@
 
 
 演示图
-![Image text](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/1.jpg)
-![Image text](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/2.jpg)
-![Image text](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/3.jpg)
+![Image](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/1.png)
+![Image](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/2.jpg)
+![Image](https://github.com/jinyu-liang/oasys/blob/master/WebRoot/temp/3.jpg)
