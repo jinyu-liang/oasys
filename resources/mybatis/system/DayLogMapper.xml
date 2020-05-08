@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DayLogMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		TB_DAYLOG
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		USER_ID,
+		LOG_NAME,
+		DATE,
+		LOG_TITLE,
+		DAYLOG_ID
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{USER_ID},
+		#{LOG_NAME},
+		#{DATE},
+		#{LOG_TITLE},
+		#{DAYLOG_ID}
+	</sql>
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		DAYLOG_ID = #{DAYLOG_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		USER_ID = #{USER_ID},
+		LOG_NAME = #{LOG_NAME},
+		DATE = #{DATE},
+		LOG_TITLE = #{LOG_TITLE},
+		DAYLOG_ID = DAYLOG_ID
+		where
+		DAYLOG_ID = #{DAYLOG_ID}
+	</update>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		DAYLOG_ID = #{DAYLOG_ID}
+	</select>
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select a.DAYLOG_ID,a.LOG_NAME,b.NAME,a.LOG_TITLE,a.DATE
+<!-- 		<include refid="Field"></include>
+ -->		from TB_DAYLOG a join SYS_USER b on a.USER_ID=b.USER_ID
+<!-- 		<include refid="tableName"></include>
+ -->		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and b.NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+		<if test="pd.startdate!= null and pd.startdate != ''"><!-- 日期检索 -->
+			and DATE &gt;= #{pd.startdate}
+		</if>
+		<if test="pd.enddate!= null and pd.enddate != ''"><!-- 日期检索 -->
+			and DATE &lt;= #{pd.enddate}
+		</if>
+	</select>
+	
+	<!-- 3级列表 -->
+	<select id="list3" parameterType="page" resultType="pd">
+		select a.DAYLOG_ID,a.LOG_NAME,b.NAME,a.LOG_TITLE,a.DATE
+
+		from TB_DAYLOG a join SYS_USER b on a.USER_ID=b.USER_ID
+
+		where a.USER_ID=#{joinId}
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and b.NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') or a.LOG_TITLE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+		<if test="pd.startdate!= null and pd.startdate != ''"><!-- 日期检索 -->
+			and DATE &gt;= #{pd.startdate}
+		</if>
+		<if test="pd.enddate!= null and pd.enddate != ''"><!-- 日期检索 -->
+			and DATE &lt;= #{pd.enddate}
+		</if>
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where
+		DAYLOG_ID in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+</mapper>

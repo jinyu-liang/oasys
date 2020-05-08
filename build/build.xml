@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="oasys" default="war" basedir="../">
+    <property name="dest.dir" value="${basedir}/WebRoot/WEB-INF/classes" />
+    <property name="src.dir" value="${basedir}/src" />
+    <!-- 定义属性，打成war包的名称。 -->
+    <property name="warFileName" value="oasys.war">
+    </property>
+    
+    	<target name="usage" depends="" description="">
+		<echo message="+----------------------------------------+" />
+		<echo message="|            编译oasys业务模块           |" />
+		<echo message="| @date: 2018-07-08                      |" />
+		<echo message="| @auth: liangjy@asiainfo.com            |" />
+		<echo message="+----------------------------------------+" />
+	</target>
+	
+   <target name="clean" depends="usage">
+        <delete dir="${dest.dir}" />
+        <delete file="${basedir}/${warFileName}">
+        </delete>
+    </target>
+    
+    <target name="init" depends="clean">
+        <mkdir dir="${dest.dir}" />
+    </target>
+    <target name="build" depends="init">
+        <javac srcdir="${src.dir}" destdir="${dest.dir}" includeantruntime="on" debug="true" source="1.7" target="1.7">
+            <!--给编译器指定编码，防止出现："警告： 编码 GBK 的不可映射字符"-->
+            <compilerarg line="-XDignore.symbol.file -encoding UTF-8 " />
+            <classpath>
+                <fileset dir="${basedir}/WebRoot/WEB-INF/lib">
+                    <include name="*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+        <!--复制源代码以外的其他文件如mybaits/hibernate的映射文件等-->  
+        <copy todir="${basedir}/WebRoot/WEB-INF/classes">
+            <fileset dir="${src.dir}" excludes="**/*.java" />
+        </copy>
+        <!--复制配置文件-->  
+        <copy todir="${basedir}/WebRoot/WEB-INF/classes">
+            <fileset dir="${basedir}/resources">
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- 定义默认任务，将class文件集合成jar包。 -->
+    <target name="war" depends="build">
+    
+        <!-- 删除原有war包。 -->
+        <delete dir="${basedir}/${warFileName}" />
+        <!-- 建立新war包。 -->
+        <war destfile="${basedir}/${warFileName}" webxml="${basedir}/WebRoot/WEB-INF/web.xml" duplicate="preserve">
+            <!-- 将非jar和非class文件拷贝到war包的对应路径下。 -->
+            <fileset dir="${basedir}/WebRoot">
+                <include name="**/**.*" />
+                <exclude name="**/*.jar" />
+                <exclude name="**/*.class" />
+            </fileset>
+            <!-- 将jar和class文件拷贝到war包的对应路径下。 -->
+            <lib dir="${basedir}/WebRoot/WEB-INF/lib" />
+            <classes dir="${dest.dir}" />
+        </war>
+        
+    </target>
+
+
+</project>

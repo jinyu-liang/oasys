@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TeamBuildingMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		TB_TEAMBUILDING
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		BULIDING_NAME,
+		BUILDING_DESCRIE,
+		STARTTIME,
+		ENDTIME,
+		STATUS,
+		REMARK,
+		TEAMBUILDING_ID
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{BULIDING_NAME},
+		#{BUILDING_DESCRIE},
+		#{STARTTIME},
+		#{ENDTIME},
+		#{STATUS},
+		#{REMARK},
+		#{TEAMBUILDING_ID}
+	</sql>
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		TEAMBUILDING_ID = #{TEAMBUILDING_ID}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		BULIDING_NAME = #{BULIDING_NAME},
+		BUILDING_DESCRIE = #{BUILDING_DESCRIE},
+		STARTTIME = #{STARTTIME},
+		ENDTIME = #{ENDTIME},
+		STATUS = #{STATUS},
+		REMARK = #{REMARK},
+		TEAMBUILDING_ID = TEAMBUILDING_ID
+		where
+		TEAMBUILDING_ID = #{TEAMBUILDING_ID}
+	</update>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		TEAMBUILDING_ID = #{TEAMBUILDING_ID}
+	</select>
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		a.*,
+		IFNULL(b.`USER_ID`,0) as ISJOIN
+		from TB_TEAMBUILDING a
+		left join TB_TEAMBUILDINGJOIN b on
+		a.TEAMBUILDING_ID = b.BUILDING_ID
+		and b.USER_ID=#{isJoin}
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and BULIDING_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+		<if test="pd.starttime!= null and pd.starttime != ''"><!-- 关键词检索 -->
+			and STARTTIME &gt;= #{pd.starttime}
+		</if>
+		<if test="pd.endtime!= null and pd.endtime != ''"><!-- 关键词检索 -->
+			and ENDTIME &lt;= #{pd.endtime}
+		</if>
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where
+		TEAMBUILDING_ID in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+</mapper>

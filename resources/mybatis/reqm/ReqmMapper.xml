@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReqmMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		T_REQ_LIST
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		REQ_ID,
+		REQ_SDPID,
+		REQ_TYPE,
+		REQ_TITLE,
+		REQ_NOTE,
+		MOBOLE_STAFF,
+		STAFF_NAME,
+		to_char(ACCEPT_DATE, 'yyyy-mm-dd') ACCEPT_DATE, 
+		AUDI_STAFF,
+		AUDI_TIME,
+		AUDI_NOTE,
+		AUDI_STATE,
+		WORKLOAD_FINAL,
+		FINISH_DATE,
+		REQ_EXTEST,
+		REQ_STATE,
+		REMARK,
+		UPDATE_STAFF,
+		to_char(UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME,
+		PAY_TAG,
+		PROJECT_NAME,
+		LOAD_NOTE,
+		LOAD_AUDISTAFF,
+		LOAD_AUDITIME,
+		LOAD_AUDINOTE,
+		LOAD_STATE,
+		STA_WEEK,
+		STA_STAFF,
+		WORKLOAD_MOBILE,
+		WORKLOAD_ZB,
+		PROBLEM_NUMBER,
+		DOCUMENTID,
+		REQUESTID,
+		SDP_STATE,
+		to_char(ANALYSIS_FINISH_DATE, 'yyyy-mm-dd') ANALYSIS_FINISH_DATE,
+		to_char(DEVELOP_FINISH_DATE, 'yyyy-mm-dd') DEVELOP_FINISH_DATE,
+		to_char(ONLINE_DATE, 'yyyy-mm-dd') ONLINE_DATE,
+		to_char(REQ_CREATE_DATE, 'yyyy-mm-dd') REQ_CREATE_DATE,
+		REQ_DEP,
+		REQ_DEP_BUSINESS,
+		CHANGE_STATE,
+		REQ_BUSINESS_DEP,
+		ACTIVE_OPTIMIZE,
+		to_char(SETTLE_TIME, 'yyyy-mm-dd') SETTLE_TIME,
+		REV_TYPE,
+		REV_CONT,
+		CODE_NAME,
+		CODE_STAFF,
+		REVIEW_STAFF
+	</sql>
+
+<sql id="SelectField">
+		REQ_ID,
+		REQ_SDPID,
+		REQ_TYPE,
+		REQ_TITLE,
+		REQ_NOTE,
+		MOBOLE_STAFF,
+		STAFF_NAME,
+		ACCEPT_DATE, 
+		AUDI_STAFF,
+		AUDI_TIME,
+		AUDI_NOTE,
+		AUDI_STATE,
+		WORKLOAD_FINAL,
+		FINISH_DATE,
+		REQ_EXTEST,
+		REQ_STATE,
+		REMARK,
+		UPDATE_STAFF,
+		UPDATE_TIME,
+		PAY_TAG,
+		PROJECT_NAME,
+		LOAD_NOTE,
+		LOAD_AUDISTAFF,
+		LOAD_AUDITIME,
+		LOAD_AUDINOTE,
+		LOAD_STATE,
+		STA_WEEK,
+		STA_STAFF,
+		WORKLOAD_MOBILE,
+		WORKLOAD_ZB,
+		PROBLEM_NUMBER,
+		DOCUMENTID,
+		REQUESTID,
+		SDP_STATE,
+		ANALYSIS_FINISH_DATE,
+		DEVELOP_FINISH_DATE,
+		ONLINE_DATE,
+		REQ_CREATE_DATE,
+		REQ_DEP,
+		REQ_DEP_BUSINESS,
+		CHANGE_STATE,
+		REQ_BUSINESS_DEP,
+		ACTIVE_OPTIMIZE,
+		SETTLE_TIME,
+		REV_TYPE,
+		REV_CONT,
+		CODE_NAME,
+		CODE_STAFF,
+		REVIEW_STAFF
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{REQ_ID, jdbcType=VARCHAR},
+		#{REQ_SDPID, jdbcType=VARCHAR},
+		#{REQ_TYPE, jdbcType=VARCHAR},
+		#{REQ_TITLE, jdbcType=VARCHAR},
+		#{REQ_NOTE, jdbcType=VARCHAR},
+		#{MOBOLE_STAFF, jdbcType=VARCHAR},
+		#{STAFF_NAME, jdbcType=VARCHAR},
+		to_date(#{ACCEPT_DATE, jdbcType=DATE}, 'yyyy-mm-dd'),
+		#{AUDI_STAFF, jdbcType=VARCHAR},
+		to_date(#{AUDI_TIME, jdbcType=DATE},'yyyy-mm-dd'),
+		#{AUDI_NOTE, jdbcType=VARCHAR},
+		#{AUDI_STATE, jdbcType=VARCHAR},
+		#{WORKLOAD_FINAL, jdbcType=INTEGER},
+		to_date(#{FINISH_DATE, jdbcType=DATE},'yyyy-mm-dd'),
+		#{REQ_EXTEST, jdbcType=VARCHAR},
+		#{REQ_STATE, jdbcType=VARCHAR},
+		#{REMARK, jdbcType=VARCHAR},
+		#{UPDATE_STAFF, jdbcType=VARCHAR},
+		to_date(#{UPDATE_TIME, jdbcType=DATE},'yyyy-mm-dd'),
+		#{PAY_TAG, jdbcType=VARCHAR},
+		#{PROJECT_NAME, jdbcType=VARCHAR},
+		#{LOAD_NOTE, jdbcType=VARCHAR},
+		#{LOAD_AUDISTAFF, jdbcType=VARCHAR},
+		to_date(#{LOAD_AUDITIME, jdbcType=DATE},'yyyy-mm-dd'),
+		#{LOAD_AUDINOTE, jdbcType=VARCHAR},
+		#{LOAD_STATE, jdbcType=VARCHAR},
+		#{STA_WEEK, jdbcType=VARCHAR},
+		#{STA_STAFF, jdbcType=VARCHAR},
+		#{WORKLOAD_MOBILE, jdbcType=INTEGER},
+		#{WORKLOAD_ZB, jdbcType=INTEGER},
+		#{PROBLEM_NUMBER, jdbcType=INTEGER},
+		#{DOCUMENTID, jdbcType=VARCHAR},
+		#{REQUESTID, jdbcType=VARCHAR},
+		#{SDP_STATE, jdbcType=CHAR},
+		to_date(#{ANALYSIS_FINISH_DATE, jdbcType=DATE},'yyyy-mm-dd'),
+		to_date(#{DEVELOP_FINISH_DATE, jdbcType=DATE},'yyyy-mm-dd'),
+		to_date(#{ONLINE_DATE, jdbcType=DATE},'yyyy-mm-dd'),
+		to_date(#{REQ_CREATE_DATE, jdbcType=DATE},'yyyy-mm-dd'),
+		#{REQ_DEP, jdbcType=VARCHAR},
+		#{REQ_DEP_BUSINESS, jdbcType=VARCHAR},
+		#{CHANGE_STATE, jdbcType=VARCHAR},
+		#{REQ_BUSINESS_DEP, jdbcType=VARCHAR},
+		#{ACTIVE_OPTIMIZE, jdbcType=VARCHAR}, 
+		to_date(#{SETTLE_TIME, jdbcType=DATE},'yyyy-mm-dd'),
+		#{REV_TYPE, jdbcType=VARCHAR},
+		#{REV_CONT, jdbcType=VARCHAR},
+		#{CODE_NAME, jdbcType=VARCHAR},
+		#{CODE_STAFF, jdbcType=VARCHAR},
+		#{REVIEW_STAFF, jdbcType=VARCHAR} 
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="SelectField"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REQ_ID = #{REQ_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			MOBOLE_STAFF = #{MOBOLE_STAFF},
+			STAFF_NAME = #{STAFF_NAME},
+			DEVELOP_FINISH_DATE = to_date(#{DEVELOP_FINISH_DATE},'yyyy-mm-dd'),
+			ONLINE_DATE = to_date(#{ONLINE_DATE},'yyyy-mm-dd'),
+			REQ_TYPE = #{REQ_TYPE},
+			REQ_NOTE=#{REQ_NOTE},
+			REMARK = #{REMARK},
+			REV_CONT = #{REV_CONT},
+			REVIEW_STAFF = #{REVIEW_STAFF},
+			CODE_NAME=#{CODE_NAME},
+			CODE_STAFF=#{CODE_STAFF},
+			REQ_STATE = #{REQ_STATE},
+			UPDATE_TIME=sysdate,
+			UPDATE_STAFF=#{UPDATE_STAFF}
+		where 
+		REQ_ID = #{REQ_ID}
+	</update>
+	
+		<!-- 修改 -->
+	<update id="editStats" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			REQ_STATE=#{REQ_STATE},
+			UPDATE_TIME=sysdate,
+			UPDATE_STAFF=#{UPDATE_STAFF}
+		where 
+		REQ_ID = #{REQ_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="REQ_ID != null and REQ_ID != ''">
+			and REQ_ID = #{REQ_ID}
+		</if>
+		<if test="REQ_SDPID != null and REQ_SDPID != ''">
+			and REQ_SDPID = #{REQ_SDPID}
+		</if>
+			
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.STAFF_NAME != null and pd.STAFF_NAME != ''">
+			and STAFF_NAME LIKE CONCAT(CONCAT('%', #{pd.STAFF_NAME}),'%')
+		</if>
+		<if test="pd.REQ_TITLE != null and pd.REQ_TITLE != ''">
+			and REQ_TITLE LIKE CONCAT(CONCAT('%', #{pd.REQ_TITLE}),'%')
+		</if>
+		<if test="pd.REQ_ID != null and pd.REQ_ID != ''">
+			and REQ_ID LIKE CONCAT(CONCAT('%', #{pd.REQ_ID}),'%')
+		</if>
+		<if test="pd.START_DATE!= null and pd.START_DATE != ''">
+			AND ACCEPT_DATE &gt;= to_date(#{pd.START_DATE},'yyyy-mm-dd')
+		</if>
+		
+		<if test="pd.END_DATE!= null and pd.END_DATE != ''">
+			AND ACCEPT_DATE &lt;= to_date(#{pd.END_DATE},'yyyy-mm-dd') 
+		</if>
+		<if test="pd.REQ_TYPE != null and pd.REQ_TYPE != ''">
+			AND REQ_TYPE = #{pd.REQ_TYPE}
+		</if>
+		<if test="pd.SCHES != null and pd.SCHES != ''">
+			AND REQ_STATE in 
+			<foreach item="item" index="index" collection="pd.SCHES" open="(" separator="," close=")">
+                 #{pd.SCHES[${index}]}
+			</foreach>
+		</if>
+		order by ONLINE_DATE desc
+
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REQ_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 ${item}
+		</foreach>
+	</delete>
+	<select id="findIdName" parameterType="pd" resultType="pd">
+		select 
+			REQ_ID,
+			SCORE_NAME,
+			END_DATE
+		from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="now!= null and now != ''"><!-- 关键词检索 -->
+		and END_DATE &gt;= #{now}
+		</if>
+	</select>
+	
+		<!-- 列表(全部) -->
+	<select id="listReqm" parameterType="pd" resultType="pd">
+		SELECT substr(a.req_id, 0, 1) req_name, a.req_state, count(1) req_sum
+		from 
+		<include refid="tableName"></include> a
+		where a.accept_date >= sysdate-360
+		   and (a.req_id like 'R%' or a.req_id like 'W%')
+		   and a.req_state in ('02', '04', '07', '08', '09')
+		 GROUP BY substr(a.req_id, 0, 1), a.req_state
+		 ORDER BY 1
+	</select>
+</mapper>

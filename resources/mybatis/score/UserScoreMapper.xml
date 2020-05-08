@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserScoreMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TF_USER_SCORE
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		USER_SCORE_ID,
+		USER_ID,
+		USER_NAME,
+		SCORE_ID,
+		SCORE_NAME,
+		SCORE_VALUE,
+		SCORE_IN_TIMES,
+		SCORE_IN_SUM,
+		SCORE_OUT_TIMES,
+		REMARK,
+		UPDATE_ID,
+		UPDATE_DATE,
+		START_DATE,
+		END_DATE
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{USER_SCORE_ID},
+		#{USER_ID},
+		#{USER_NAME},
+		#{SCORE_ID},
+		#{SCORE_NAME},
+		#{SCORE_VALUE},
+		#{SCORE_IN_TIMES},
+		#{SCORE_IN_SUM},
+		#{SCORE_OUT_TIMES},
+		#{REMARK},
+		#{UPDATE_ID},
+		#{UPDATE_DATE},
+		#{START_DATE, jdbcType=DATE},
+		#{END_DATE, jdbcType=DATE}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_SCORE_ID = #{USER_SCORE_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		SCORE_OUT_TIMES=#{SCORE_OUT_TIMES},
+		SCORE_IN_TIMES=#{SCORE_IN_TIMES},
+		SCORE_IN_SUM=#{SCORE_IN_SUM},
+		SCORE_VALUE = #{SCORE_VALUE},
+		USER_SCORE_ID = USER_SCORE_ID
+		where 
+		USER_SCORE_ID = #{USER_SCORE_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		a.* ,if((now() &gt;= a.start_date and sysdate() &lt;= a.end_date),"1","0") as SHOW_TAG
+		from 
+		<include refid="tableName"></include> a
+		where 
+			USER_SCORE_ID = #{USER_SCORE_ID}
+		order by score_id desc, score_in_sum,score_value desc
+	</select>
+
+	<!-- 通过loginID获取数据 -->
+	<select id="findloginid" parameterType="pd" resultType="pd">
+		select 
+		SCORE_ID
+		from 
+		<include refid="tableName"></include>
+		where 
+			USER_ID = #{USER_ID}
+	</select>
+		
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		a.* ,if((now() &gt;= a.start_date and sysdate() &lt;= a.end_date),"1","0") as SHOW_TAG
+		from 
+		<include refid="tableName"></include> a
+		where 1=1
+		<if test="pd.USER_ID!= null and pd.USER_ID != ''"><!-- 关键词检索 -->
+			and USER_ID = #{pd.USER_ID}
+		</if>
+		<if test="pd.SCORE_ID!= null and pd.SCORE_ID != ''"><!-- 关键词检索 -->
+			and SCORE_ID = #{pd.SCORE_ID}
+		</if> 
+		<if test="pd.AMOUNT_S!= null and pd.AMOUNT_S != ''"><!-- 关键词检索 -->
+			and SCORE_VALUE &gt;=CONVERT(#{pd.AMOUNT_S},SIGNED)
+			and SCORE_VALUE &lt;=CONVERT(#{pd.AMOUNT_E},SIGNED)
+		</if>
+		order by score_id desc,score_in_sum desc,score_value desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		a.* ,if((now() &gt;= a.start_date and sysdate() &lt;= a.end_date),"1","0") as SHOW_TAG
+		from 
+		<include refid="tableName"></include> a
+		order by score_in_sum,score_value desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_SCORE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<select id="newInfo" parameterType="pd" resultType="pd">
+		select
+		*
+		from 
+		<include refid="tableName"></include>
+		where 
+		USER_ID=#{USER_ID} and SCORE_ID=#{SCORE_ID}
+	</select>
+	
+	<select id="findBydoubleId" parameterType="pd" resultType="pd">
+		select
+		*
+		from 
+		<include refid="tableName"></include>
+		where 
+		USER_ID=#{USER_ID} and SCORE_ID=#{SCORE_ID}
+	</select>
+	
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserScoreLogMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TL_USER_SCORE_LOG
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		LOG_TYPE,	
+		USER_ID,	
+		SCORE_ID,	
+		SCORE_VALUE,	
+		SCORE_IN_ID,	
+		SCORE_IN_VALUE,	
+		SCORE_OUT_ID,	
+		SCORE_OUT_VALUE,	
+		REMARK,	
+		UPDATE_ID,	
+		UPDATE_DATE,	
+		USER_SCORE_LOG_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{LOG_TYPE},	
+		#{USER_ID},	
+		#{SCORE_ID},	
+		#{SCORE_VALUE},	
+		#{SCORE_IN_ID},	
+		#{SCORE_IN_VALUE},	
+		#{SCORE_OUT_ID},	
+		#{SCORE_OUT_VALUE},	
+		#{REMARK},	
+		#{UPDATE_ID},	
+		#{UPDATE_DATE},	
+		#{USER_SCORE_LOG_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_SCORE_LOG_ID = #{USER_SCORE_LOG_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			SCORE_IN_VALUE = #{SCORE_IN_VALUE},
+		USER_SCORE_LOG_ID = USER_SCORE_LOG_ID
+		where 
+		USER_SCORE_LOG_ID = #{USER_SCORE_LOG_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			USER_SCORE_LOG_ID = #{USER_SCORE_LOG_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			A.LOG_TYPE,	
+			A.USER_ID,	
+			A.SCORE_ID,	
+			A.SCORE_VALUE,	
+			A.SCORE_IN_ID,	
+			A.SCORE_IN_VALUE,	
+			A.SCORE_OUT_ID,	
+			A.SCORE_OUT_VALUE,	
+			A.REMARK,	
+			A.UPDATE_ID,	
+			A.UPDATE_DATE,	
+			A.USER_SCORE_LOG_ID,
+			B.SCORE_NAME,
+			C.P_NAME LOG_TYPE_NAME,
+			D.NAME USER_NAME,
+			E.NAME SCORE_IN_NAME,
+			F.NAME SCORE_OUT_NAME
+		from 
+		(<include refid="tableName"></include> A,
+		SYS_SCORE B,
+		SYS_PARAM C)
+		LEFT JOIN SYS_USER D
+			ON D.USER_ID = A.UPDATE_ID
+		LEFT JOIN SYS_USER E
+			ON E.USER_ID = A.SCORE_IN_ID
+		LEFT JOIN SYS_USER F
+			ON F.USER_ID = A.SCORE_OUT_ID
+		where 1=1
+			AND C.P_CODE = '500' 
+			AND C.P_VALUE = A.LOG_TYPE 
+			AND B.SCORE_ID = A.SCORE_ID
+			<if test="pd.LOG_TYPE!= null and pd.LOG_TYPE != ''">
+				AND A.LOG_TYPE = #{pd.LOG_TYPE}
+			</if>
+			
+			<if test="pd.SCORE_NAME!= null and pd.SCORE_NAME != ''">
+				AND B.SCORE_NAME LIKE CONCAT(CONCAT('%', #{pd.SCORE_NAME}),'%')
+			</if>
+			
+			<if test="pd.USER_NAME!= null and pd.USER_NAME != ''">
+				AND D.NAME LIKE CONCAT(CONCAT('%', #{pd.USER_NAME}),'%')
+			</if>
+			
+			<if test="pd.START_DATE!= null and pd.START_DATE != ''">
+				AND DATE(A.UPDATE_DATE) &gt;=#{pd.START_DATE}
+			</if>
+			
+			<if test="pd.END_DATE!= null and pd.END_DATE != ''">
+				AND DATE(A.UPDATE_DATE) &lt;=#{pd.END_DATE} 
+			</if>
+			
+		ORDER BY USER_SCORE_LOG_ID DESC
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_SCORE_LOG_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

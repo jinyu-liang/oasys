@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BreakdownMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_BK
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		BK_ID,
+		BK_TITLE,
+		BK_PROCESS_P,
+		BK_REPORT_P,
+		BK_TIME,
+		BK_SUBSYS,
+		BK_REP_STATUS,
+		BK_DETAIL_DESCI,
+		BK_INFLU,
+		BK_PROCE_PROCE,
+		BK_ANALYSISANDSUMMARY,
+		BK_AFTERANDARRANGE,
+		BK_AUDITOPINION,
+		BK_PANELAUDITOR
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{BK_ID},
+		#{BK_TITLE},
+		#{BK_PROCESS_P},
+		#{BK_REPORT_P},
+		#{BK_TIME},
+		#{BK_SUBSYS},
+		#{BK_REP_STATUS},
+		#{BK_DETAIL_DESCI},
+		#{BK_INFLU},
+		#{BK_PROCE_PROCE},
+		#{BK_ANALYSISANDSUMMARY},
+		#{BK_AFTERANDARRANGE},
+		#{BK_AUDITOPINION},
+		#{BK_PANELAUDITOR}
+	</sql>
+
+	<sql id="subsysName">
+		SYS_SUBSYS
+	</sql>
+
+	<!--按条件查询故障报告-->
+	<select id="breakdownlistPage" parameterType="page" resultType="pd">
+		select tb.BK_ID,
+		tb.BK_TITLE,
+		tb.BK_TIME,
+		sb.SUBSYS_NAME,
+		a.NAME AS BK_PROCESS_P,
+		b.NAME AS BK_REPORT_P ,
+		tb.BK_REP_STATUS ,
+		tb.BK_PANELAUDITOR
+		from
+		SYS_SUBSYS sb ,
+		<include refid="tableName"></include>
+		 tb LEFT JOIN  SYS_USER AS a ON a.USERNAME=tb.BK_PROCESS_P
+		LEFT JOIN  SYS_USER AS b ON b.USERNAME=tb.BK_REPORT_P
+		WHERE 1=1
+		and
+		sb.SUBSYS_ID=tb.BK_SUBSYS
+		<if test="pd.BK_TITLE!=null and pd.BK_TITLE!=''">
+			and tb.BK_TITLE LIKE CONCAT(CONCAT('%', #{pd.BK_TITLE}),'%')
+		</if>
+		<if test="pd.startTime!=null and pd.startTime!=''"><!-- 开始时间检索 -->
+			and tb.BK_TIME &gt;= #{pd.startTime}
+		</if>
+		<if test="pd.endTime!=null and pd.endTime!=''"><!-- 结束时间检索 -->
+			and tb.BK_TIME &lt;= #{pd.endTime}
+		</if>
+		<if test="pd.BK_REPORT_P != null and pd.BK_REPORT_P != ''"><!-- 报告人检索 -->
+			and tb.BK_REPORT_P=#{pd.BK_REPORT_P}
+		</if>
+		<if test="pd.BK_PROCESS_P != null and pd.BK_PROCESS_P != ''"><!-- 处理人检索 -->
+			and tb.BK_PROCESS_P=#{pd.BK_PROCESS_P}
+		</if>
+		<if test="pd.BK_SUBSYS != null and pd.BK_SUBSYS != ''"><!-- 子系统检索 -->
+		    	and tb.BK_SUBSYS=#{pd.BK_SUBSYS}
+	    </if>
+
+		<if test="pd.BK_REP_STATUS != null and pd.BK_REP_STATUS != ''"><!-- 状态检索 -->
+			and tb.BK_REP_STATUS=#{pd.BK_REP_STATUS}
+		</if>
+	</select>
+
+
+	<select id="findbyIdB" parameterType="pd" resultType="pd" >
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		BK_ID = #{BK_ID}
+	</select>
+
+
+	<!-- 新增故障报告 -->
+	<insert id="saveB" parameterType="pd">
+		INSERT INTO  <include refid="tableName"></include> (
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+
+
+	<!--删除故障报告 -->
+	<delete id="deleteB" parameterType="pd" flushCache="false">
+		delete from <include refid="tableName"></include>
+		where
+		BK_ID = #{BK_ID}
+	</delete>
+
+
+	<!-- 修改故障报告 -->
+	<update id="editB" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		<if test="BK_PROCESS_P != null and BK_PROCESS_P != ''">
+			BK_PROCESS_P = #{BK_PROCESS_P},
+		</if>
+		<if test="BK_REPORT_P != null and BK_REPORT_P != ''">
+			BK_REPORT_P = #{BK_REPORT_P},
+		</if>
+		<if test="BK_TIME != null and BK_TIME != ''">
+			BK_TIME = #{BK_TIME},
+		</if>
+		<if test="BK_SUBSYS != null and BK_SUBSYS != ''">
+			BK_SUBSYS = #{BK_SUBSYS},
+		</if>
+		<if test="BK_REP_STATUS != null and BK_REP_STATUS != ''">
+			BK_REP_STATUS = #{BK_REP_STATUS},
+		</if>
+		<if test="BK_DETAIL_DESCI != null and BK_DETAIL_DESCI != ''">
+			BK_DETAIL_DESCI = #{BK_DETAIL_DESCI},
+		</if>
+		<if test="BK_INFLU != null and BK_INFLU != ''">
+			BK_INFLU = #{BK_INFLU},
+		</if>
+		<if test="BK_PROCE_PROCE != null and BK_PROCE_PROCE != ''">
+			BK_PROCE_PROCE = #{BK_PROCE_PROCE},
+		</if>
+		<if test="BK_ANALYSISANDSUMMARY != null and BK_ANALYSISANDSUMMARY != ''">
+			BK_ANALYSISANDSUMMARY = #{BK_ANALYSISANDSUMMARY},
+		</if>
+		<if test="BK_AFTERANDARRANGE != null and BK_AFTERANDARRANGE != ''">
+			BK_AFTERANDARRANGE = #{BK_AFTERANDARRANGE},
+		</if>
+		<if test="BK_AUDITOPINION != null and BK_AUDITOPINION != ''">
+			BK_AUDITOPINION = #{BK_AUDITOPINION},
+		</if>
+		<if test="BK_PANELAUDITOR != null and BK_PANELAUDITOR != ''">
+			BK_PANELAUDITOR = #{BK_PANELAUDITOR},
+		</if>
+			BK_TITLE = #{BK_TITLE}
+		where
+		BK_ID = #{BK_ID}
+	</update>
+
+	<!-- 批量删除-->
+	<delete id="deleteAllB" parameterType="String">
+		delete from <include refid="tableName"></include>
+		where  BK_ID in
+		<foreach  item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+
+</mapper>

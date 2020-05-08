@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TrainPlanMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_TRAINPLAN
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		PLAN_NAME,	
+		PLAN_DESCRIE,	
+		STARTTIME,	
+		ENDTIME,	
+		STATUS,	
+		REMARK,	
+		LETURE,	
+		PLANTRAINTIME,	
+		PLANPLACE,	
+		REALTRAINTIME,	
+		REWARD,	
+		JOINUSER,	
+		TRAINPLAN_ID,
+		ISJOIN,
+		PLANFILEID,
+		PLANFILENAME,
+		PICTUREID1,
+		PICTURENAME1,
+		PICTUREID2,
+		PICTURENAME2
+		
+	</sql>
+	
+	<sql id="Field2">
+		PLAN_NAME,	
+		PLAN_DESCRIE,	
+		STARTTIME,	
+		ENDTIME,	
+		STATUS,	
+		REMARK,	
+		LETURE,	
+		PLANTRAINTIME,	
+		PLANPLACE,	
+		REALTRAINTIME,	
+		REWARD,	
+		JOINUSER,	
+		TRAINPLAN_ID,
+		PLANFILEID,
+		PLANFILENAME,
+		PICTUREID1,
+		PICTURENAME1,
+		PICTUREID2,
+		PICTURENAME2
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{PLAN_NAME},	
+		#{PLAN_DESCRIE},	
+		#{STARTTIME},	
+		#{ENDTIME},	
+		#{STATUS},	
+		#{REMARK},	
+		#{LETURE},	
+		#{PLANTRAINTIME},	
+		#{PLANPLACE},	
+		#{REALTRAINTIME},	
+		#{REWARD},	
+		#{JOINUSER},	
+		#{TRAINPLAN_ID},
+		#{PLANFILEID},
+		#{PLANFILENAME},
+		#{PICTUREID1},
+		#{PICTURENAME1},
+		#{PICTUREID2},
+		#{PICTURENAME2}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field2"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TRAINPLAN_ID = #{TRAINPLAN_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			PLAN_NAME = #{PLAN_NAME},
+			PLAN_DESCRIE = #{PLAN_DESCRIE},
+			STARTTIME = #{STARTTIME},
+			ENDTIME = #{ENDTIME},
+			REMARK = #{REMARK},
+			LETURE = #{LETURE},
+			PLANTRAINTIME = #{PLANTRAINTIME},
+			PLANPLACE = #{PLANPLACE},
+			REALTRAINTIME = #{REALTRAINTIME},
+			REWARD = #{REWARD},
+		TRAINPLAN_ID = TRAINPLAN_ID
+		where 
+		TRAINPLAN_ID = #{TRAINPLAN_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field2"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			TRAINPLAN_ID = #{TRAINPLAN_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and	PLAN_NAME LIKE CONCAT(CONCAT('%',#{pd.keywords}),'%') 
+		</if>
+		<if test="pd.starttime!= null and pd.starttime != ''"><!-- 关键词检索 -->
+			and STARTTIME &gt;= #{pd.starttime}
+		</if>
+		<if test="pd.endtime!= null and pd.endtime != ''"><!-- 关键词检索 -->
+			and ENDTIME &lt;= #{pd.endtime}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 列表2 -->
+	<select id="datalistPage2" parameterType="page" resultType="pd">
+	select 
+	a.*,
+	DATE_FORMAT(a.STARTTIME,'%Y-%m-%d %T') AS STARTTIME1,
+	DATE_FORMAT(a.ENDTIME,'%Y-%m-%d %T') AS ENDTIME1,
+	IFNULL(b.`USER_ID`,0) as ISJOIN
+ 	from TB_TRAINPLAN a
+ 	left join TB_TRAINJOIN b on
+   	a.TRAINPLAN_ID  = b.plan_id
+  	and b.user_id=#{isJoin}
+	where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''">
+			and	a.PLAN_NAME LIKE CONCAT(CONCAT('%',#{pd.keywords}),'%') 
+		</if>
+		<if test="pd.starttime!= null and pd.starttime != ''">
+			and DATE_FORMAT(a.STARTTIME , '%Y-%m-%d')&gt;=  DATE_FORMAT(#{pd.starttime}, '%Y-%m-%d') 
+		</if>
+		<if test="pd.endtime!= null and pd.endtime != ''">
+			 and DATE_FORMAT(a.ENDTIME , '%Y-%m-%d')&lt;=  DATE_FORMAT(#{pd.endtime}, '%Y-%m-%d')
+		</if>
+	order by a.STARTTIME desc
+	</select>
+	
+	<!-- 列表3 -->
+	<select id="tutorlist" parameterType="page" resultType="pd">
+	SELECT LETURE,SUM(A.PLANTRAINTIME) ALL_PLANTRAINTIME,SUM(A.REALTRAINTIME) ALL_REALTRAINTIME,COUNT(1) ALL_NUM
+	FROM TB_TRAINPLAN A 
+	where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''">
+			and	A.LETURE LIKE CONCAT(CONCAT('%',#{pd.keywords}),'%') 
+		</if>
+	GROUP BY A.LETURE 
+	ORDER BY ALL_NUM DESC
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TRAINPLAN_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<select id="pie" parameterType="pd" resultType="pd">
+				
+		SELECT COUNT(*) as COUNT, A.SCORE_TYPE,C.PLAN_NAME
+		FROM TB_TRAINSCORE A JOIN  TB_TRAINSCORES B ON A.SCORE_TYPE=B.SCORE JOIN TB_TRAINPLAN C ON B.PLAN_ID=C.TRAINPLAN_ID
+		WHERE B.PLAN_ID=#{TRAINPLAN_ID}
+		GROUP BY A.SCORE_TYPE
+	</select>
+
+	<select id="pie2" parameterType="pd" resultType="pd">
+
+		SELECT
+		COUNT( * ) AS COUNT,
+		A.SCORE_TYPE,
+		C.LETURE
+		FROM
+		TB_TRAINSCORE A
+		JOIN TB_TRAINSCORES B ON A.SCORE_TYPE = B.SCORE
+		JOIN TB_TRAINPLAN C ON B.PLAN_ID = C.TRAINPLAN_ID
+		WHERE C.LETURE=#{LETURE}
+		GROUP BY
+		A.SCORE_TYPE,C.LETURE
+		order by C.LETURE
+	</select>
+	
+	<!-- zhangxuan5-->
+	
+		<!-- 通过ID获取数据 -->
+	<select id="showPlanInfo" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field2"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			LETURE = #{LETURE}
+	</select>
+</mapper>

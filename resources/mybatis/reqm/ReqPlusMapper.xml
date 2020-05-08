@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReqPlusMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		T_REQ_LISTPLUS
+	</sql>
+	
+	<sql id="reqtableName">
+		T_REQ_LIST
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		REQ_SDPIDPLUS ,
+		REQ_SDPID ,
+		CODE_STAFF,
+		REQ_STATE_PLUS,
+		MOD_ID,
+		FINISH_DATE ,
+		REMARK,
+		UPDATE_STAFF,
+		UPDATE_TIME ,
+		FILE_LIST ,
+		REQPLUS_NOTE,
+		REVIEW_TAG,
+		REVIEW_STAFF,
+		REVIEW_NOTE ,
+		REVIEW_STATE,
+		WORKLOAD,
+		START_DATE,
+		REQ_WAIT_TIME ,
+		REQ_SHUT_TIME ,
+		TONGJI,
+		ONLINE_TIME ,
+		IN_DATE,
+		TONGJI_TAG,
+		TONGJI_STATUS
+	</sql>
+
+	<sql id="SelectField">
+	    REQ_SDPIDPLUS,
+		REQ_SDPID ,
+		CODE_STAFF,
+		REQ_STATE_PLUS,
+		MOD_ID,
+		to_char(FINISH_DATE, 'yyyy-mm-dd') FINISH_DATE ,
+		REMARK,
+		UPDATE_STAFF,
+		to_char(UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME ,
+		FILE_LIST ,
+		REQPLUS_NOTE,
+		REVIEW_TAG,
+		REVIEW_STAFF,
+		REVIEW_NOTE ,
+		REVIEW_STATE,
+		WORKLOAD,
+		to_char(START_DATE, 'yyyy-mm-dd') START_DATE,
+		to_char(REQ_WAIT_TIME, 'yyyy-mm-dd') REQ_WAIT_TIME ,
+		to_char(REQ_SHUT_TIME, 'yyyy-mm-dd') REQ_SHUT_TIME ,
+		TONGJI,
+		to_char(ONLINE_TIME, 'yyyy-mm-dd') ONLINE_TIME ,
+		to_char(IN_DATE, 'yyyy-mm-dd') IN_DATE,
+		TONGJI_TAG,
+		TONGJI_STATUS
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{REQ_SDPIDPLUS },
+		#{REQ_SDPID },
+		#{CODE_STAFF},
+		#{REQ_STATE_PLUS},
+		#{MOD_ID},
+		to_date(#{FINISH_DATE, jdbcType=DATE}, 'yyyy-mm-dd') ,
+		#{REMARK},
+		#{UPDATE_STAFF},
+		to_date(#{UPDATE_TIME, jdbcType=DATE}, 'yyyy-mm-dd') ,
+		#{FILE_LIST},
+		#{REQPLUS_NOTE},
+		#{REVIEW_TAG},
+		#{REVIEW_STAFF},
+		#{REVIEW_NOTE },
+		#{REVIEW_STATE},
+		#{WORKLOAD},
+		to_date(#{START_DATE, jdbcType=DATE}, 'yyyy-mm-dd'),
+		to_date(#{REQ_WAIT_TIME, jdbcType=DATE}, 'yyyy-mm-dd') ,
+		to_date(#{REQ_SHUT_TIME, jdbcType=DATE}, 'yyyy-mm-dd') ,
+		#{TONGJI},
+		to_date(#{ONLINE_TIME, jdbcType=DATE}, 'yyyy-mm-dd') ,
+		to_date(#{IN_DATE, jdbcType=DATE}, 'yyyy-mm-dd'),
+		#{TONGJI_TAG},
+		#{TONGJI_STATUS}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REQ_SDPIDPLUS = #{REQ_SDPIDPLUS}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			REQ_STATE_PLUS = #{REQ_STATE_PLUS},
+			CODE_STAFF = #{CODE_STAFF},
+			START_DATE = to_date(#{START_DATE},'yyyy-mm-dd'),
+			FINISH_DATE = to_date(#{FINISH_DATE},'yyyy-mm-dd'),
+			WORKLOAD = #{WORKLOAD},
+			REQPLUS_NOTE=#{REQPLUS_NOTE},
+			REMARK = #{REMARK},
+			FILE_LIST = #{FILE_LIST},
+			<if test="TONGJI_TAG != null and TONGJI_TAG != ''">
+				TONGJI_TAG = #{TONGJI_TAG},
+			</if>
+			<if test="TONGJI != null and TONGJI != ''">
+				TONGJI = #{TONGJI},
+			</if>
+			<if test="TONGJI_STATUS != null and TONGJI_STATUS != ''">
+				TONGJI_STATUS = #{TONGJI_STATUS},
+			</if>
+			UPDATE_STAFF=#{UPDATE_STAFF},
+			UPDATE_TIME=sysdate
+			
+		where 
+		REQ_SDPIDPLUS = #{REQ_SDPIDPLUS}
+	</update>
+	
+		<!-- 修改 -->
+	<update id="editStats" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			REQ_STATE_PLUS=#{REQ_STATE_PLUS},
+			UPDATE_TIME=sysdate,
+			UPDATE_STAFF=#{UPDATE_STAFF}
+		where 
+		REQ_SDPIDPLUS = #{REQ_SDPIDPLUS}
+	</update>
+	
+	<!-- 通过REQ_SDPID获取数据 -->
+	<select id="findBySdpId" parameterType="pd" resultType="pd">
+		select
+				REQ_SDPIDPLUS,
+				REQ_SDPID,
+				CODE_STAFF,
+				REQ_STATE_PLUS,
+				decode(REQ_STATE_PLUS,'07','需求开发','08','需求测试','09','需求上线','10','需求关闭') REQ_STATE,
+				decode(TONGJI_STATUS,'0','有效','1','分派中','2','分派完成') TONGJI_STATUS_NAME,
+				MOD_ID,
+				to_char( FINISH_DATE, 'yyyy-mm-dd' ) FINISH_DATE,
+				REMARK,
+				UPDATE_STAFF,
+				to_char( UPDATE_TIME, 'yyyy-mm-dd' ) UPDATE_TIME,
+				FILE_LIST,
+				REQPLUS_NOTE,
+				REVIEW_TAG,
+				REVIEW_STAFF,
+				REVIEW_NOTE,
+				REVIEW_STATE,
+				WORKLOAD,
+				nvl(WORKLOAD,0) WORKLOAD1,
+				to_char( START_DATE, 'yyyy-mm-dd' ) START_DATE,
+				to_char( REQ_WAIT_TIME, 'yyyy-mm-dd' ) REQ_WAIT_TIME,
+				to_char( REQ_SHUT_TIME, 'yyyy-mm-dd' ) REQ_SHUT_TIME,
+				TONGJI,
+				to_char( ONLINE_TIME, 'yyyy-mm-dd' ) ONLINE_TIME,
+				to_char( IN_DATE, 'yyyy-mm-dd' ) IN_DATE,
+				TONGJI_TAG,
+				TONGJI_STATUS
+		from
+		<include refid="tableName"></include> p
+		where 
+			p.REQ_SDPID = #{REQ_SDPID}
+		<if test="CODE_STAFF != null and CODE_STAFF != ''">
+			and p.CODE_STAFF = #{CODE_STAFF}
+		</if>
+		<if test="REQ_STATE_PLUS != null and REQ_STATE_PLUS != ''">
+			and p.REQ_STATE_PLUS = #{REQ_STATE_PLUS}
+		</if>
+	</select>
+	
+	<!-- 通过REQ_SDPID获取数据 -->
+	<select id="findBySdpId2" parameterType="pd" resultType="pd">
+		select
+		<include refid="SelectField"></include>
+		from
+		<include refid="tableName"></include> p
+		where 
+			p.REQ_SDPID = #{REQ_SDPID}
+	</select>
+	
+	<select id="findBySdpIdSum" parameterType="pd" resultType="pd">
+		select
+		nvl(sum(p.TONGJI),0) TONGJISUM
+		from
+		<include refid="tableName"></include> p
+		where 
+			p.REQ_SDPID = #{REQ_SDPID}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		p.REQ_SDPIDPLUS,
+		p.REQ_SDPID ,
+		p.CODE_STAFF,
+		p.REQ_STATE_PLUS,
+		p.MOD_ID,
+		to_char(p.FINISH_DATE, 'yyyy-mm-dd') FINISH_DATE ,
+		p.REMARK,
+		p.UPDATE_STAFF,
+		to_char(p.UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME ,
+		p.FILE_LIST ,
+		p.REQPLUS_NOTE,
+		p.REVIEW_TAG,
+		p.REVIEW_STAFF,
+		p.REVIEW_NOTE ,
+		p.REVIEW_STATE,
+		p.WORKLOAD,
+		to_char(p.START_DATE, 'yyyy-mm-dd') START_DATE,
+		to_char(p.REQ_WAIT_TIME, 'yyyy-mm-dd') REQ_WAIT_TIME ,
+		to_char(p.REQ_SHUT_TIME, 'yyyy-mm-dd') REQ_SHUT_TIME ,
+		p.TONGJI,
+		to_char(p.ONLINE_TIME, 'yyyy-mm-dd') ONLINE_TIME ,
+		to_char(p.IN_DATE, 'yyyy-mm-dd') IN_DATE,
+		t.REQ_TITLE,
+		t.REQ_NOTE,
+		t.REQ_ID,
+		p.TONGJI_TAG,
+		p.TONGJI_STATUS,
+		decode(p.TONGJI_STATUS,'0','有效','1','分派中','2','分派完成','有效') TONGJI_STATUS_NAME
+		from 
+		<include refid="tableName"></include> p
+		left join 
+		<include refid="reqtableName"></include> t
+		on p.REQ_SDPID = t.REQ_SDPID
+		where 
+			p.REQ_SDPIDPLUS = #{REQ_SDPIDPLUS}
+		order by p.FINISH_DATE desc
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		p.REQ_SDPIDPLUS,
+		p.REQ_SDPID ,
+		p.CODE_STAFF,
+		p.REQ_STATE_PLUS,
+		p.MOD_ID,
+		to_char(p.FINISH_DATE, 'yyyy-mm-dd') FINISH_DATE ,
+		p.REMARK,
+		p.UPDATE_STAFF,
+		to_char(p.UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME ,
+		p.FILE_LIST ,
+		p.REQPLUS_NOTE,
+		p.REVIEW_TAG,
+		p.REVIEW_STAFF,
+		p.REVIEW_NOTE ,
+		p.REVIEW_STATE,
+		nvl(p.WORKLOAD,0) WORKLOAD,
+		to_char(p.START_DATE, 'yyyy-mm-dd') START_DATE,
+		to_char(p.REQ_WAIT_TIME, 'yyyy-mm-dd') REQ_WAIT_TIME ,
+		to_char(p.REQ_SHUT_TIME, 'yyyy-mm-dd') REQ_SHUT_TIME ,
+		 TONGJI,
+		to_char(p.ONLINE_TIME, 'yyyy-mm-dd') ONLINE_TIME ,
+		to_char(p.IN_DATE, 'yyyy-mm-dd') IN_DATE,
+		t.REQ_TITLE,
+		t.REQ_NOTE,
+		t.REQ_ID,
+		p.TONGJI_TAG,
+		p.TONGJI_STATUS,
+		decode(p.TONGJI_STATUS,'0','有效','1','分派中','2','分派完成','有效') TONGJI_STATUS_NAME
+		from 
+		<include refid="tableName"></include> p
+		left join 
+		<include refid="reqtableName"></include> t
+		on p.REQ_SDPID = t.REQ_SDPID
+		where 1=1
+		<if test="pd.CODE_STAFF != null and pd.CODE_STAFF != ''">
+			and p.CODE_STAFF = #{pd.CODE_STAFF}
+		</if>
+		<if test="pd.REQ_SDPID != null and pd.REQ_SDPID != ''">
+			and p.REQ_SDPID LIKE CONCAT(CONCAT('%', #{pd.REQ_SDPID}),'%')
+		</if>
+		<if test="pd.REQ_SDPIDPLUS != null and pd.REQ_SDPIDPLUS != ''">
+			and p.REQ_SDPIDPLUS LIKE CONCAT(CONCAT('%', #{pd.REQ_SDPIDPLUS}),'%')
+		</if>
+		<if test="pd.REQ_TITLE != null and pd.REQ_TITLE != ''">
+			and t.REQ_TITLE LIKE CONCAT(CONCAT('%', #{pd.REQ_TITLE}),'%')
+		</if>
+		<if test="pd.START_DATE!= null and pd.START_DATE != ''">
+			AND p.START_DATE &gt;= to_date(#{pd.START_DATE},'yyyy-mm-dd')
+		</if>
+		
+		<if test="pd.FINISH_DATE!= null and pd.FINISH_DATE != ''">
+			AND p.FINISH_DATE &lt;= to_date(#{pd.FINISH_DATE},'yyyy-mm-dd') 
+		</if>
+		<if test="pd.SCHES != null and pd.SCHES != ''">
+			AND p.REQ_STATE_PLUS in 
+			<foreach item="item" index="index" collection="pd.SCHES" open="(" separator="," close=")">
+                 #{pd.SCHES[${index}]}
+			</foreach>
+		</if>
+		<!-- 
+		<if test="pd.TONGJI_STATUS != null and pd.TONGJI_STATUS != ''">
+			AND p.TONGJI_STATUS in 
+			<foreach item="item" index="index" collection="pd.TONGJI_STATUS" open="(" separator="," close=")">
+                 #{pd.TONGJI_STATUS[${index}]}
+			</foreach>
+		</if>
+		 
+		<if test="pd.TONGJI_STATUS == null or pd.TONGJI_STATUS == ''">
+			AND (p.TONGJI_STATUS = '0' or p.TONGJI_STATUS is null)
+		</if>
+		-->
+		order by p.FINISH_DATE desc
+
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+	select
+	    p.REQ_SDPIDPLUS,
+		p.REQ_SDPID ,
+		p.CODE_STAFF,
+		p.REQ_STATE_PLUS,
+		p.MOD_ID,
+		to_char(p.FINISH_DATE, 'yyyy-mm-dd') FINISH_DATE ,
+		p.REMARK,
+		p.UPDATE_STAFF,
+		to_char(p.UPDATE_TIME, 'yyyy-mm-dd') UPDATE_TIME ,
+		p.FILE_LIST ,
+		p.REQPLUS_NOTE,
+		p.REVIEW_TAG,
+		p.REVIEW_STAFF,
+		p.REVIEW_NOTE ,
+		p.REVIEW_STATE,
+		p.WORKLOAD,
+		to_char(p.START_DATE, 'yyyy-mm-dd') START_DATE,
+		to_char(p.REQ_WAIT_TIME, 'yyyy-mm-dd') REQ_WAIT_TIME ,
+		to_char(p.REQ_SHUT_TIME, 'yyyy-mm-dd') REQ_SHUT_TIME ,
+		p.TONGJI,
+		to_char(p.ONLINE_TIME, 'yyyy-mm-dd') ONLINE_TIME ,
+		to_char(p.IN_DATE, 'yyyy-mm-dd') IN_DATE,
+		t.REQ_TITLE,
+		t.REQ_NOTE,
+		t.REQ_ID,
+		p.TONGJI_TAG,
+		p.TONGJI_STATUS
+		from 
+		<include refid="tableName"></include> p
+		left join 
+		<include refid="reqtableName"></include> t
+		on p.REQ_SDPID = t.REQ_SDPID
+		order by p.FINISH_DATE desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			REQ_SDPIDPLUS in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 ${item}
+		</foreach>
+	</delete>
+	
+	<!-- 本月工作量 -->
+	<select id="findByStaffSum" parameterType="pd" resultType="pd">
+		select
+		 nvl(sum(p.WORKLOAD),0) num
+		from
+		<include refid="tableName"></include> p
+		where 
+			p.UPDATE_TIME  &gt;= trunc(sysdate, 'mm')
+		and p.CODE_STAFF = #{CODE_STAFF}
+		and p.REQ_STATE_PLUS = '10'
+	</select>
+	
+	<!-- 6个月工作量 -->
+	<select id="findByStaffSum6" parameterType="pd" resultType="pd">
+		 select a.DATAS, nvl(b.WORKLOAD,0) WORKLOAD
+			 from (
+			 select distinct(DATAS) DATAS  from (
+			  SELECT TO_CHAR(trunc(add_months(sysdate, -5), 'month') + ROWNUM - 1,  'yyyy-MM') AS DATAS FROM   DUAL
+			  CONNECT BY ROWNUM &lt;= TRUNC(sysdate - trunc(add_months(sysdate, -5), 'month') ) + 1)) a
+			  left join ( select to_char(p.UPDATE_TIME, 'yyyy-MM') UPDATE_TIME,
+			       sum(nvl(p.WORKLOAD, 0)) WORKLOAD 
+			  from T_REQ_LISTPLUS p
+			 where p.UPDATE_TIME &gt;= trunc(add_months(sysdate, -6), 'month')
+			   and p.REQ_STATE_PLUS = '10'
+			   and p.CODE_STAFF = #{CODE_STAFF}
+			 GROUP BY to_char(p.UPDATE_TIME, 'yyyy-MM')) b
+			 on a.DATAS  = b.UPDATE_TIME
+			 ORDER BY a.DATAS
+	</select>
+	
+</mapper>

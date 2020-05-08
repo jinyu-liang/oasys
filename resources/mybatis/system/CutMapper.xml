@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CutMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_CUT
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+      CUT_ID,
+      CUT_TITLE,
+      CUT_RESP_P,
+      IT_CUT_RESP_P,
+      CUT_TIME,
+      CUT_MEMBER,
+      CUT_IT_VERIFIER,
+      CUT_DETAIL_DESCI,
+      CUT_INFLU,
+      CUT_PROCE_PROCE,
+      CUT_ANALYSISANDSUMMARY,
+      CUT_AFTERANDARRANGE,
+      CUT_REPORT_RESP_P,
+      CUT_REPORT_BUILD_TIME
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{CUT_ID},
+		#{CUT_TITLE},
+		#{CUT_RESP_P},
+		#{IT_CUT_RESP_P},
+		#{CUT_TIME},
+		#{CUT_MEMBER},
+		#{CUT_IT_VERIFIER},
+		#{CUT_DETAIL_DESCI},
+		#{CUT_INFLU},
+		#{CUT_PROCE_PROCE},
+		#{CUT_ANALYSISANDSUMMARY},
+		#{CUT_AFTERANDARRANGE},
+		#{CUT_REPORT_RESP_P},
+		#{CUT_REPORT_BUILD_TIME}
+	</sql>
+
+	<!--按条件查询切割报告-->
+	<select id="cutlistPage" parameterType="page" resultType="pd">
+		select cut.CUT_ID,
+		cut.CUT_TITLE,
+		cut.CUT_TIME,
+		a.NAME AS CUT_RESP_P,
+		b.NAME AS IT_CUT_RESP_P ,
+		c.NAME AS CUT_REPORT_RESP_P ,
+		cut.CUT_REPORT_BUILD_TIME
+		from
+		<include refid="tableName"></include>
+		 cut LEFT JOIN  SYS_USER AS a ON a.USERNAME=cut.CUT_RESP_P
+		LEFT JOIN  SYS_USER AS b ON b.USERNAME=cut.IT_CUT_RESP_P
+		LEFT JOIN  SYS_USER AS c ON c.USERNAME=cut.CUT_REPORT_RESP_P
+		WHERE 1=1
+		<if test="pd.CUT_TITLE!=null and pd.CUT_TITLE!=''">
+			and cut.CUT_TITLE LIKE CONCAT(CONCAT('%', #{pd.CUT_TITLE}),'%')<!-- 标题检索 -->
+		</if>
+		<if test="pd.startTime!=null and pd.startTime!=''"><!-- 开始时间检索 -->
+			and cut.CUT_TIME &gt;= #{pd.startTime}
+		</if>
+		<if test="pd.endTime!=null and pd.endTime!=''"><!-- 结束时间检索 -->
+			and cut.CUT_TIME &lt;= #{pd.endTime}
+		</if>
+		<if test="pd.CUT_RESP_P != null and pd.CUT_RESP_P != ''"><!-- 切割负责人检索 -->
+			and cut.CUT_RESP_P=#{pd.CUT_RESP_P}
+		</if>
+		<if test="pd.IT_CUT_RESP_P != null and pd.IT_CUT_RESP_P != ''"><!-- IT负责人检索 -->
+			and cut.IT_CUT_RESP_P=#{pd.IT_CUT_RESP_P}
+		</if>
+
+	</select>
+
+	<!--按ID查询切割报告-->
+	<select id="findbyIdC" parameterType="pd" resultType="pd" >
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		CUT_ID = #{CUT_ID}
+	</select>
+
+
+	<!-- 新增故障切割报告 -->
+	<insert id="saveC" parameterType="pd">
+		INSERT INTO  <include refid="tableName"></include> (
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+
+
+
+	<!--删除切割报告 -->
+	<delete id="deleteC" parameterType="pd" flushCache="false">
+		delete from <include refid="tableName"></include>
+		where
+		CUT_ID = #{CUT_ID}
+	</delete>
+
+
+	<!-- 修改切割报告 -->
+	<update id="editC" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		<if test="CUT_RESP_P != null and CUT_RESP_P != ''">
+			CUT_RESP_P = #{CUT_RESP_P},
+		</if>
+		<if test="IT_CUT_RESP_P != null and IT_CUT_RESP_P != ''">
+			IT_CUT_RESP_P = #{IT_CUT_RESP_P},
+		</if>
+		<if test="CUT_TIME != null and CUT_TIME != ''">
+			CUT_TIME = #{CUT_TIME},
+		</if>
+		<if test="CUT_MEMBER != null and CUT_MEMBER  != ''">
+			CUT_MEMBER  = #{CUT_MEMBER },
+		</if>
+		<if test="CUT_IT_VERIFIER != null and CUT_IT_VERIFIER != ''">
+			CUT_IT_VERIFIER = #{CUT_IT_VERIFIER},
+		</if>
+		<if test="CUT_DETAIL_DESCI != null and CUT_DETAIL_DESCI != ''">
+			CUT_DETAIL_DESCI = #{CUT_DETAIL_DESCI},
+		</if>
+		<if test="CUT_INFLU != null and CUT_INFLU != ''">
+			CUT_INFLU = #{CUT_INFLU},
+		</if>
+		<if test="CUT_PROCE_PROCE != null and CUT_PROCE_PROCE != ''">
+			CUT_PROCE_PROCE = #{CUT_PROCE_PROCE},
+		</if>
+		<if test="CUT_ANALYSISANDSUMMARY != null and CUT_ANALYSISANDSUMMARY != ''">
+			CUT_ANALYSISANDSUMMARY = #{CUT_ANALYSISANDSUMMARY},
+		</if>
+		<if test="CUT_ANALYSISANDSUMMARY != null and CUT_ANALYSISANDSUMMARY != ''">
+			CUT_ANALYSISANDSUMMARY = #{CUT_ANALYSISANDSUMMARY},
+		</if>
+		<if test="CUT_AFTERANDARRANGE != null and CUT_AFTERANDARRANGE != ''">
+			CUT_AFTERANDARRANGE = #{CUT_AFTERANDARRANGE},
+		</if>
+		CUT_TITLE = #{CUT_TITLE}
+		where
+		CUT_ID = #{CUT_ID}
+	</update>
+
+	<!--批量删除报告 -->
+	<delete id="deleteAllC" parameterType="String">
+		delete from <include refid="tableName"></include>
+		where  CUT_ID in
+		<foreach  item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+
+
+</mapper>

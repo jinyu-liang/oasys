@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SequenceMapper">
+
+	<select id="getSpellFull" parameterType="pd" resultType="java.lang.String">
+		SELECT CONCAT(date_format(now(), '%Y%m%d'),LPAD(NEXTVAL('TestSeq'),8,'0'))
+	</select>
+
+	<select id="getLogID" parameterType="pd" resultType="java.lang.String">
+		SELECT CONCAT(date_format(now(), '%Y%m%d'),LPAD(NEXTVAL(#{ID}),8,'0'))
+	</select>
+
+	<select id="getLenId" parameterType="pd" resultType="java.lang.String">
+		SELECT LPAD(NEXTVAL(#{ID}),#{LEN},'0')
+	</select>
+
+
+
+</mapper>

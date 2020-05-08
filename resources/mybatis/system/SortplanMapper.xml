@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SortplanMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_SORTPLAN
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		SP_ID,
+		SP_TITLE,
+		SP_CONTENT,
+		SP_PERSON,
+		SP_STARTTIME,
+		SP_ENDTIME
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{SP_ID},
+		#{SP_TITLE},
+		#{SP_CONTENT},
+		#{SP_PERSON},
+		#{SP_STARTTIME},
+		#{SP_ENDTIME}
+	</sql>
+
+
+	<!--按条件查询培训计划-->
+	<select id="sortplanlistPage" parameterType="page" resultType="pd">
+		select sp.SP_ID,
+		sp.SP_TITLE,
+		sp.SP_CONTENT,
+		a.NAME AS SP_PERSON,
+		sp.SP_STARTTIME ,
+		sp.SP_ENDTIME,
+        tl.TL_TIME AS SP_STATUS
+		from
+		<include refid="tableName"></include>  sp LEFT JOIN  SYS_USER AS a ON a.USERNAME=sp.SP_PERSON
+         LEFT JOIN  TL_SORTPLAN AS tl ON sp.SP_ID=tl.TL_SP_ID AND tl.TL_USERNAME=#{pd.TL_USERNAME} AND tl.TL_TIME=#{pd.TL_TIME}
+		where sp.SP_STARTTIME &lt;= #{pd.TL_TIME} and	sp.SP_ENDTIME &gt;= #{pd.TL_TIME}
+
+	</select>
+
+
+	<select id="findbyIdS" parameterType="pd" resultType="pd" >
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		SP_ID = #{SP_ID}
+	</select>
+
+
+	<!-- 新增培训计划-->
+	<insert id="savesingin" parameterType="pd">
+		INSERT INTO  TL_SORTPLAN (
+		TL_USERNAME,TL_SP_ID,TL_TIME
+		) values (
+		#{TL_USERNAME},
+		#{TL_SP_ID},
+		#{TL_TIME}
+		)
+	</insert>
+
+
+
+    <insert id="saveS" parameterType="pd">
+        INSERT INTO  <include refid="tableName"></include> (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+
+
+
+    <!--删除故障报告 -->
+	<delete id="deleteS" parameterType="pd" flushCache="false">
+		delete from <include refid="tableName"></include>
+		where
+		SP_ID = #{SP_ID}
+	</delete>
+
+
+	<!-- 修改故障报告 -->
+	<update id="editS" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		<if test="SP_CONTENT != null and SP_CONTENT != ''">
+			SP_CONTENT = #{SP_CONTENT},
+		</if>
+		<if test="SP_PERSON != null and SP_PERSON != ''">
+			SP_PERSON = #{SP_PERSON},
+		</if>
+		<if test="SP_STARTTIME != null and SP_STARTTIME != ''">
+			SP_STARTTIME = #{SP_STARTTIME},
+		</if>
+		<if test="SP_ENDTIME != null and SP_ENDTIME != ''">
+			SP_ENDTIME = #{SP_ENDTIME},
+		</if>
+        <if test="SP_TITLE != null and SP_TITLE != ''">
+            SP_TITLE = #{SP_TITLE},
+        </if>
+        SP_ID = #{SP_ID}
+		where
+		SP_ID = #{SP_ID}
+	</update>
+
+	<!-- 批量删除-->
+	<delete id="deleteAllS" parameterType="String">
+		delete from <include refid="tableName"></include>
+		where  SP_ID in
+		<foreach  item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+
+</mapper>

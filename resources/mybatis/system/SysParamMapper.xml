@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysParamMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		SYS_PARAM
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		P_CODE,	
+		P_VALUE,	
+		P_NAME,	
+		P_DES,	
+		STATUS,	
+		START_DATE,	
+		END_DATE,	
+		REMARK,
+		RSRV_STR1,
+		RSRV_STR2,
+		RSRV_STR3,
+		RSRV_STR4,
+		RSRV_STR5
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{P_CODE},	
+		#{P_VALUE},	
+		#{P_NAME},	
+		#{P_DES},	
+		#{STATUS},	
+		#{START_DATE},	
+		#{END_DATE},	
+		#{REMARK},
+		#{RSRV_STR1},
+		#{RSRV_STR2},
+		#{RSRV_STR3},
+		#{RSRV_STR4},
+		#{RSRV_STR5}
+		
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			P_CODE = #{P_CODE}
+		and P_VALUE = #{P_VALUE}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			P_CODE = #{P_CODE},
+			P_VALUE = #{P_VALUE},
+			P_NAME = #{P_NAME},
+			P_DES = #{P_DES},
+			STATUS = #{STATUS},
+			START_DATE = #{START_DATE},
+			END_DATE = #{END_DATE},
+			REMARK = #{REMARK}
+		where 
+		P_CODE = #{P_CODE}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			P_CODE = #{P_CODE}
+		<if test="STATUS != null and STATUS != ''">
+			and STATUS = #{STATUS}
+		</if>
+			
+		order by P_VALUE
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		and P_CODE = #{pd.P_CODE}
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			P_CODE in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

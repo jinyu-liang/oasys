@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GroupMapper">
+	
+	<resultMap type="Group" id="groupResultMap">
+		<id column="GROUP_ID" property="GROUP_ID"/>
+		<result column="GROUP_NAME" property="GROUP_NAME"/>
+		<result column="REMARK" property="REMARK"/>
+	</resultMap>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		GROUP_ID,
+		GROUP_NAME,
+		REMARK
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{GROUP_ID},
+		#{GROUP_NAME},
+		#{REMARK}
+	</sql>
+	
+	<!--表名 -->
+	<sql id="tableName">
+		SYS_GROUP
+	</sql>
+	
+	<!-- 列出所有组 -->
+	<select id="listAllGroupsByPId" parameterType="pd" resultMap="groupResultMap">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+			1=1
+		<if test="GROUP_ID != null and GROUP_ID != ''"><!-- 组ID检索 -->
+		   <if test="pd.GROUP_ID != ''">
+			AND GROUP_ID = #{GROUP_ID}
+		   </if>
+		</if>
+			
+		ORDER BY GROUP_ID
+	</select>
+	
+	<!-- 通过id查找 -->
+	<select id="findObjectById" parameterType="pd" resultType="pd">
+		select  
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where GROUP_ID = #{GROUP_ID}
+	</select>
+	
+	<!-- 添加 -->
+	<insert id="insert" parameterType="pd">
+		insert into 
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>	
+		)
+	</insert>
+	
+	<!-- 保存修改 -->
+	<update id="edit" parameterType="pd">
+		update 
+		<include refid="tableName"></include>
+		set GROUP_NAME = #{GROUP_NAME}
+		where GROUP_ID = #{GROUP_ID}
+	</update>
+	
+	<!-- 删除角色  -->
+	<delete id="deleteGroupById" parameterType="String">
+		delete from 
+		<include refid="tableName"></include>
+		where GROUP_ID=#{GROUP_ID}
+	</delete>
+
+</mapper>

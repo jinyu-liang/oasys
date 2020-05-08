@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OperationApproveMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_OPERATION_APPROVE
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		APPROVE_ID,	
+		SUBMITID,	
+		SUBMITTER,	
+		SUBMINT_DATE,
+		UPDATE_PEOPLE,
+	    UPDATE_DATE,	
+		QUES_DESCRIBE,	
+		SOLUTION,	
+		RISK_ASSESS,	
+		UPDATE_CONTENT,	
+		UPDATE_STEP,	
+		TEST_METHOD,	
+		OFFICE_SUPERVISOR,	
+		OFFICE_MANAGER,	
+		APPROVE_STATE,	
+		APPROVE_SUGGES,	
+		ASI_OFFICE_SUPERVISOR,	
+		ASI_OFFICE_MANAGER,	
+		ASI_APPROVE_STATE,	
+		ASI_APPROVE_SUGGES
+		
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{APPROVE_ID},	
+		#{SUBMITID},	
+		#{SUBMITTER},	
+		#{SUBMINT_DATE},
+		#{UPDATE_PEOPLE},
+		#{UPDATE_DATE},	
+		#{QUES_DESCRIBE},	
+		#{SOLUTION},	
+		#{RISK_ASSESS},	
+		#{UPDATE_CONTENT},	
+		#{UPDATE_STEP},	
+		#{TEST_METHOD},	
+		#{OFFICE_SUPERVISOR},	
+		#{OFFICE_MANAGER},	
+		#{APPROVE_STATE},	
+		#{APPROVE_SUGGES},	
+		#{ASI_OFFICE_SUPERVISOR},	
+		#{ASI_OFFICE_MANAGER},	
+		#{ASI_APPROVE_STATE},	
+		#{ASI_APPROVE_SUGGES}	
+		
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			APPROVE_ID = #{APPROVE_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			APPROVE_ID = #{APPROVE_ID},
+			SUBMITID = #{SUBMITID},
+			SUBMITTER = #{SUBMITTER},
+			SUBMINT_DATE = #{SUBMINT_DATE},
+			UPDATE_PEOPLE = #{UPDATE_PEOPLE},
+			UPDATE_DATE = #{UPDATE_DATE},
+			QUES_DESCRIBE = #{QUES_DESCRIBE},
+			SOLUTION = #{SOLUTION},
+			RISK_ASSESS = #{RISK_ASSESS},
+			UPDATE_CONTENT = #{UPDATE_CONTENT},
+			UPDATE_STEP = #{UPDATE_STEP},
+			TEST_METHOD = #{TEST_METHOD},
+			OFFICE_SUPERVISOR = #{OFFICE_SUPERVISOR},
+			OFFICE_MANAGER = #{OFFICE_MANAGER},
+			APPROVE_STATE = #{APPROVE_STATE},
+			APPROVE_SUGGES = #{APPROVE_SUGGES},
+			ASI_OFFICE_SUPERVISOR = #{ASI_OFFICE_SUPERVISOR},
+			ASI_OFFICE_MANAGER = #{ASI_OFFICE_MANAGER},
+			ASI_APPROVE_STATE = #{ASI_APPROVE_STATE},
+			ASI_APPROVE_SUGGES = #{ASI_APPROVE_SUGGES},
+		APPROVE_ID = APPROVE_ID
+		where 
+		APPROVE_ID = #{APPROVE_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			APPROVE_ID = #{APPROVE_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		
+		
+		
+		<!-- 关键词检索 -->
+<!-- 		<if test="pd.keywords!= null and pd.keywords != ''">     关键词检索
+			and
+				(
+				
+				SUBMITTER LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or
+					SUBMITID LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				    or
+				    APPROVE_STATE  LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				    or
+				    ASI_APPROVE_STATE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				    or
+				    SUBMITID  LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if> -->
+		<if test="pd.SUBMINT_DATE!=null and pd.SUBMINT_DATE!=''"><!-- 提交时间时间检索 -->
+			and SUBMINT_DATE = #{pd.SUBMINT_DATE} 
+		</if>
+		<if test="pd.UPDATE_DATE!=null and pd.UPDATE_DATE!=''"><!-- 更新时间检索 -->
+			and UPDATE_DATE = #{pd.UPDATE_DATE}                                <!-- &gt;等价于">"   &lt;等价于"<"-->
+		</if>
+		
+		<if test="pd.APPROVE_STATE != null and pd.APPROVE_STATE != ''"><!-- 局方审批状态检索（下拉框）-->
+			and APPROVE_STATE=#{pd.APPROVE_STATE} 
+		</if>
+		
+		<if test="pd.ASI_APPROVE_STATE != null and pd.ASI_APPROVE_STATE != ''"><!-- 亚信审批状态检索（下拉框）-->
+			and ASI_APPROVE_STATE=#{pd.ASI_APPROVE_STATE} 
+		</if>
+		<if test="pd.SUBMITTER != null and pd.SUBMITTER != ''"><!-- 提交人检索 模糊查询-->
+			and SUBMITTER LIKE CONCAT(CONCAT('%', #{pd.SUBMITTER}),'%')
+		</if>
+		<if test="pd.SUBMITID != null and pd.SUBMITID != ''"><!-- 提交ID检索 模糊查询-->
+			and SUBMITTER LIKE CONCAT(CONCAT('%', #{pd.SUBMITID}),'%')
+		</if>
+		order by SUBMINT_DATE DESC
+		
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			APPROVE_ID  in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fankl 2018.11.15 -->
+</mapper>

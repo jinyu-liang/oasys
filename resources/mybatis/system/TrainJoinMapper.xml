@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TrainJoinMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TB_TRAINJOIN
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		PLAN_ID,	
+		PLAN_NAME,	
+		USER_ID,	
+		USER_NAME,	
+		CREATTIME,	
+		REMARK,	
+		SIGN_TAG,	
+		TRAINJOIN_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{PLAN_ID},	
+		#{PLAN_NAME},	
+		#{USER_ID},	
+		#{USER_NAME},	
+		#{CREATTIME},	
+		#{REMARK},	
+		#{SIGN_TAG},	
+		#{TRAINJOIN_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TRAINJOIN_ID = #{TRAINJOIN_ID}
+	</delete>
+	<!-- 级联删除-->
+	<delete id="deletecascade" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			PLAN_ID = #{TRAINPLAN_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		
+		<if test="REMARK==null or REMARK==''">
+			set SIGN_TAG=#{SIGN_TAG}
+		</if>
+		<if test="SIGN_TAG==null or SIGN_TAG==''">
+			set REMARK = #{REMARK}
+		</if>
+	
+		where 
+		TRAINJOIN_ID = #{TRAINJOIN_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			TRAINJOIN_ID = #{TRAINJOIN_ID}
+	</select>
+	
+	<!-- 列表一级 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		a.*,b.NAME as NAME
+		from 
+		TB_TRAINJOIN a join SYS_USER b ON a.USER_ID=b.USER_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and a.PLAN_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+	</select>
+	<!-- 列表三级 -->
+	<select id="datalistPage3" parameterType="page" resultType="pd">
+		select
+		a.*,b.NAME as NAME
+		from 
+		TB_TRAINJOIN a join SYS_USER b ON a.USER_ID=b.USER_ID
+		where a.USER_ID=#{joinId}
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and a.PLAN_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TRAINJOIN_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除 -->
+	<delete id="deleteAllCascade" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			PLAN_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量修改 -->
+	<update id="passAll" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		
+			set SIGN_TAG='1'
+	
+		where 
+		
+		TRAINJOIN_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</update>
+	<!-- zhangxuan5 -->
+</mapper>

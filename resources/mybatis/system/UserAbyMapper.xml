@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserAbyMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		TF_USER_ABY
+	</sql>
+	<sql id="userTableName">
+		SYS_USER
+	</sql>
+	<!-- 字段 -->
+	<sql id="Field">
+		USER_ID,	
+		BUSINESS,	
+		TECHNICAL,	
+		COMMUNICATION,	
+		INNOVATION,	
+		LEARN,	
+		REMARK,	
+		UPDATE_DATE, 
+		UPDATE_ID,
+		ABY_SUM
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{USER_ID},	
+		#{BUSINESS},	
+		#{TECHNICAL},	
+		#{COMMUNICATION},	
+		#{INNOVATION},	
+		#{LEARN},	
+		#{REMARK},	
+		#{UPDATE_DATE},	
+		#{UPDATE_ID},
+		#{ABY_SUM}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_ID = #{USER_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			USER_ID = #{USER_ID},
+			BUSINESS = #{BUSINESS},
+			TECHNICAL = #{TECHNICAL},
+			LEARN = #{LEARN},
+			REMARK = #{REMARK},
+			UPDATE_DATE = #{UPDATE_DATE},
+			UPDATE_ID = #{UPDATE_ID},
+			ABY_SUM = #{ABY_SUM},
+		where 
+		USER_ID = #{USER_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		a.USER_ID,
+		a.BUSINESS,
+		a.TECHNICAL,
+		a.COMMUNICATION,
+		a.INNOVATION,
+		a.LEARN,
+		a.REMARK,
+		a.UPDATE_DATE, 
+		a.UPDATE_ID,
+		a.ABY_SUM,
+		u.NAME
+		from 
+		<include refid="tableName"></include> a
+		left join 
+		<include refid="userTableName"></include> u
+		on u.USER_ID=a.USER_ID
+		where 
+			a.USER_ID = #{USER_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		a.USER_ID,
+		a.BUSINESS,
+		a.TECHNICAL,
+		a.COMMUNICATION,
+		a.INNOVATION,
+		a.LEARN,
+		a.REMARK,
+		a.UPDATE_DATE, 
+		a.UPDATE_ID,
+		a.ABY_SUM,
+		u.NAME
+		from 
+		<include refid="tableName"></include> a
+		left join 
+		<include refid="userTableName"></include> u
+		on u.USER_ID=a.USER_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				a.USER_ID LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USER_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 技能 -->
+	<select id="findByIdSkill" parameterType="pd" resultType="pd">
+		SELECT
+			bb.NAME,
+			ROUND (	aa.BUSINESS / (	5 * ( SELECT count( user_id ) FROM TF_USER_ABY_DETAIL dd WHERE dd.USER_ID = aa.user_id AND dd.aby_group_id = '1' ) ),	4 	) * 100 AS BUSINESS_P,
+			ROUND (	aa.TECHNICAL /(5 * ( SELECT count( user_id ) FROM TF_USER_ABY_DETAIL dd WHERE dd.USER_ID = aa.user_id AND dd.aby_group_id = '2' ) ),
+			4 	) * 100 AS TECHNICAL_P,
+			ROUND( aa.COMMUNICATION / 5, 4 ) * 100 AS COMMUNICATION_P,
+			ROUND( aa.INNOVATION / 5, 4 ) * 100 AS INNOVATION_P,
+			ROUND( aa.LEARN / 5, 4 ) * 100 AS LEARN_P 
+		FROM
+			TF_USER_ABY aa,
+			SYS_USER bb 
+		WHERE 1=1
+			and aa.USER_ID = bb.USER_ID
+			and aa.USER_ID = #{USER_ID}
+ 
+	</select>
+	
+		<!-- 技能 -->
+	<select id="findByIdSkillInfos" parameterType="pd" resultType="pd">
+		SELECT
+			bb.NAME,
+			aa.ABY_3RD,
+			ROUND( aa.ABY_VALUE / 5, 4 ) * 100 ABY_VALUE_O 
+		FROM
+			TF_USER_ABY_DETAIL aa,
+			SYS_USER bb 
+		WHERE
+			1 = 1 
+			AND aa.USER_ID = bb.USER_ID 
+			AND aa.ABY_GROUP_ID = #{ABY_GROUP_ID}
+			AND aa.USER_ID = #{USER_ID}
+		ORDER BY aa.ABY_VALUE DESC 
+			LIMIT 0,4
+ 
+	</select>
+	
+	
+</mapper>
